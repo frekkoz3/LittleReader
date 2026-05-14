@@ -20,10 +20,11 @@ import easyocr
 import torch
 from ultralytics import YOLO, RTDETR
 import numpy as np
-from paddleocr import PaddleOCR
 
-from src.ocr.patch_handler import cut_patches, remove_overlapping_patches, cut_almost_squared_tiles
-from src.ocr.text_transcriptor import run_ocr_on_patches
+from huggingface_hub import hf_hub_download
+
+from src.patch_handler import cut_patches, remove_overlapping_patches, cut_almost_squared_tiles
+from src.text_transcriptor import run_ocr_on_patches
 
 def layout_detector(
     model,
@@ -84,16 +85,22 @@ def layout_detector(
     
 if __name__ == "__main__":
 
-    model_name = "1024_1_yolo26"
+    using_yolo = False
 
-    img_path = "imgs/00001.png"
+    repo_id = "frekko/paper_model_yolo26" if using_yolo else "frekko/paper_model_rt_detr"
+    model_name = "1024_0_v2_yolo26.pt" if using_yolo else "1024_0_v2_rt_detr.pt"
+
+    model_path = hf_hub_download(
+        repo_id=repo_id,
+        filename=model_name,
+        resume_download=True
+    )
+
+    model = YOLO(model_path) if using_yolo else RTDETR(model_path)
+
+    img_path = "imgs/proof.png"
 
     image = cv2.imread(str(img_path))
-
-    # Load model
-    model = YOLO(f"models/{model_name}.pt")
-
-    #model = RTDETR(f"models/{model_name}.pt")
 
     layout = layout_detector(model, image)
 

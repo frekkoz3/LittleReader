@@ -1,2 +1,9 @@
+# virtual environment
 .venv
-venv
+.env
+# python related
+__pycache__
+# pyenv related
+.python-version
+# temporal crops
+crops/

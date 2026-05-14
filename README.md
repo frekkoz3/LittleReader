@@ -10,6 +10,8 @@ This repository contains the implementation of *LittleReader*, a lightweight hyb
 
 ## Document Layout Detection Module
 
+The document layout detection module are based on the fine tuned model available at this [hf repo](https://huggingface.co/frekko/paper_model_rt_detr).
+
 ## Layout Handling Module
 
 ## OCR Module

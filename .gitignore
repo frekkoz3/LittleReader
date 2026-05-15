@@ -8,4 +8,4 @@ __pycache__
 # temporal crops
 crops/
 # dataset for evaluation
-PRImA_dataset/
+Prima/

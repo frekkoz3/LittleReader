@@ -7,3 +7,5 @@ __pycache__
 .python-version
 # temporal crops
 crops/
+# dataset for evaluation
+PRImA_dataset/

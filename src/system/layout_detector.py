@@ -16,15 +16,15 @@ r"""
 from __future__ import annotations
 
 import cv2
-import easyocr
+from doctr.models import ocr_predictor
 import torch
 from ultralytics import YOLO, RTDETR
 import numpy as np
 
 from huggingface_hub import hf_hub_download
 
-from src.patch_handler import cut_patches, remove_overlapping_patches, cut_almost_squared_tiles
-from src.text_transcriptor import run_ocr_on_patches
+from src.system.patch_handler import cut_patches, remove_overlapping_patches, cut_almost_squared_tiles
+from src.system.text_transcriptor import run_ocr_on_patches
 
 def layout_detector(
     model,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     model_path = hf_hub_download(
         repo_id=repo_id,
         filename=model_name,
-        resume_download=True
+        token=True
     )
 
     model = YOLO(model_path) if using_yolo else RTDETR(model_path)
@@ -116,30 +116,35 @@ if __name__ == "__main__":
     tiles = cut_almost_squared_tiles(non_overlapping_patches)
 
     for i, tile in enumerate(tiles):
-        cv2.imwrite(f"crops/tile{i}.png", tile["crop"])
+        cv2.imwrite(f"crops/tile_{i}.png", tile["crop"])
 
-    reader = easyocr.Reader(["it"])
+    reader = ocr_predictor(pretrained=True)
 
     ocr_results = run_ocr_on_patches(
         tiles,
         reader
     )
 
-    # Print OCR
-    for i, result in enumerate(ocr_results):
+    final_txt = ""
 
-        print("\n" + "=" * 60)
-        print(f"TILE {i}")
-        print("=" * 60)
+    for i, result in enumerate(ocr_results):
 
         for detection in result["ocr"]:
 
             try:
-                _, text, confidence = detection
+                text = detection
 
-                print(
-                    f"[{confidence:.2f}] {text}"
-                )
+                final_txt+= text
 
             except Exception:
                 print(detection)
+
+    final_txt = final_txt.replace("\n", " ")
+
+    final_txt = final_txt.strip()
+
+    print(final_txt)
+        
+    with open("text_proof.txt", "w+") as f:
+        f.write(final_txt)
+    

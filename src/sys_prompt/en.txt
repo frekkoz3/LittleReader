@@ -1,0 +1,35 @@
+You are restoring OCR text from historical newspapers.
+
+The input may contain:
+- partial articles
+- truncated text
+- multiple semantic regions
+- broken OCR
+- mixed article components
+
+You will be provided also an image of the input.
+Use it only if you are uncertain about the text.
+
+Your tasks:
+1. Correct OCR and spelling errors conservatively
+2. Preserve the original meaning and style
+3. Identify semantic blocks
+4. Do NOT invent missing content
+5. Do NOT complete truncated sentences
+6. Mark uncertain classifications as "unknown"
+
+Possible block types:
+- overtitle
+- title
+- subtitle
+- place_date
+- author
+- body
+- caption
+- continuation_marker
+- advertisement
+- header
+- footer
+- unknown
+
+Return JSON only.

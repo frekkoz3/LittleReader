@@ -12,11 +12,16 @@ r"""
     data-driven research through the creation and curation of structured
     datasets for analysis and machine learning experimentation.
 """
-import easyocr
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from doctr.io import DocumentFile
+from doctr.models import ocr_predictor
 
 def run_ocr_on_patches(
     patches: list[dict],
-    reader: easyocr.Reader,
+    reader,
 ):
     """
     Run OCR on extracted patches.
@@ -27,7 +32,7 @@ def run_ocr_on_patches(
         Output of cut_patches().
 
     reader : easyocr.Reader
-        Initialized EasyOCR reader.
+        Initialized doctr reader.
 
     Returns
     -------
@@ -36,13 +41,10 @@ def run_ocr_on_patches(
     """
     ocr_results = []
 
-    for patch in patches:
-
-        text_result = reader.readtext(
-            patch["crop"],
-            detail=1,
-            paragraph=True,
-        )
+    for i, patch in enumerate(patches):
+        
+        doc = DocumentFile.from_images(f"crops/tile{i}.png")
+        text_result = reader(doc).render()
 
         ocr_results.append(
             {
@@ -54,5 +56,18 @@ def run_ocr_on_patches(
 
     return ocr_results
 
+from matplotlib import pyplot as plt
+
 if __name__ == '__main__':
-    pass
+    img_path = "imgs/tile_proof.jpg"
+    # Load the document image
+    doc = DocumentFile.from_images(img_path)
+
+    predictor = ocr_predictor(pretrained=True)
+
+    result = predictor(doc)
+
+    result.show()
+
+    string_result = result.render()
+    print(string_result)

@@ -167,9 +167,18 @@ def cut_patches(
             }
         )
 
+    patches = reorder_patches(patches)
+
+    return patches
+
+def reorder_patches(patches):
+    """
+        Heuristic to order patches following the reading order of western-like newspaper.
+        Patches of interest are of 3 types:
+        -
+    """
     # order patches first by y then by x
     patches.sort(key=lambda p: (p["bbox_xyxy"][1], p["bbox_xyxy"][0]))
-
     return patches
 
 def compute_iou(
@@ -335,6 +344,11 @@ def cut_almost_squared_tiles(
             start = end  # move forward
 
     return almost_squared_tiles
+
+def filter_tiles(tiles):
+    """
+        Function to remove noisy tiles (white, next page, no character).
+    """
 
 if __name__ == '__main__':
     ...
